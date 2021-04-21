@@ -18,6 +18,8 @@ protected:
 	double _cube_angle { 0. };
 	std::shared_ptr<Map> _map;
 
+	GLuint _wall_list { 0 }, _space_list { 0 };
+
 	void draw_cube();
 	void draw_wall();
 	void draw_space();
