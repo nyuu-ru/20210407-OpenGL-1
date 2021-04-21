@@ -8,14 +8,19 @@
 #ifndef DEMOWINDOW_H_
 #define DEMOWINDOW_H_
 
+#include <memory>
 #include "Window.h"
+#include "Map.h"
 
 class DemoWindow final : public Window
 {
 protected:
 	double _cube_angle { 0. };
+	std::shared_ptr<Map> _map;
 
 	void draw_cube();
+	void draw_wall();
+	void draw_space();
 
 public:
 	DemoWindow(int width = DEFAULT_WIDTH, int height = DEFAULT_HEIGHT);
