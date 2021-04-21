@@ -14,6 +14,9 @@ class DemoWindow final : public Window
 {
 protected:
 	double _cube_angle { 0. };
+
+	void draw_cube();
+
 public:
 	DemoWindow(int width = DEFAULT_WIDTH, int height = DEFAULT_HEIGHT);
 	virtual ~DemoWindow() = default;

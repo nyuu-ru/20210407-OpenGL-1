@@ -15,6 +15,8 @@ DemoWindow::DemoWindow(int width, int height)
 
 void DemoWindow::setup_gl()
 {
+	glEnable(GL_DEPTH_TEST);
+
 	glClearColor(0.2f, 0.4f, 0.7f, 1.0f);
 
 	glMatrixMode(GL_PROJECTION);
@@ -26,18 +28,9 @@ void DemoWindow::setup_gl()
 	glMatrixMode(GL_MODELVIEW);
 }
 
-void DemoWindow::render()
+
+void DemoWindow::draw_cube()
 {
-	glClear(GL_COLOR_BUFFER_BIT); // Очистка
-
-	glLoadIdentity(); // MV = единичная матрица
-
-	gluLookAt(	3.0, 4.0, 2.0,		// Координаты камеры
-				0.0, 0.0, 0.0,		// Координаты центра
-				0.0, 0.0, 1.0);		// Направление вверх,	MV = C
-
-	glRotated(_cube_angle, 0.0, 0.0, 1.0);
-
 	glBegin(GL_QUADS);
 
 	glColor3d(1.0, 0.0, 0.0);		// Нижняя грань, красная
@@ -52,26 +45,46 @@ void DemoWindow::render()
 	glVertex3d( 1.0,  1.0,  1.0);
 	glVertex3d(-1.0,  1.0,  1.0);
 
-	/* TODO: задание для самостоятельной работы
-	 * - Добавить оставшиеся грани куба
-	 * - Выяснить, почему куб в текущем виде отображается неправильно
-	 * - Исправить программу, чтобы куб начал правильно отображаться
-	 * - Разобраться с основными преобразованиями:
-	 * 		~ параллельный перенос;
-	 * 		~ поворот;
-	 * 		~ масштабирование.
-	 * - Разобраться с функциями glPushMatrix() и glPopMatrix()
-	 * - Построить из кубиков пирамидку:
-	 *          +-+
-	 *          |X|
-	 *        +-+ +-+
-	 *        |X| |X|
-	 *      +-+ +-+ +-+
-	 *      |X| |X| |X|
-	 *      +-+ +-+ +-+
-	 */
+	glColor3d(0.0, 1.0, 0.0);		// Передняя грань, зелёная
+	glVertex3d( 1.0, -1.0,  1.0);
+	glVertex3d( 1.0,  1.0,  1.0);
+	glVertex3d( 1.0,  1.0, -1.0);
+	glVertex3d( 1.0, -1.0, -1.0);
+
+	glColor3d(1.0, 0.0, 1.0);		// Задняя грань, малиновая
+	glVertex3d(-1.0,  1.0,  1.0);
+	glVertex3d(-1.0, -1.0,  1.0);
+	glVertex3d(-1.0, -1.0, -1.0);
+	glVertex3d(-1.0,  1.0, -1.0);
+
+	glColor3d(0.0, 0.0, 1.0);		// Правая грань, синяя
+	glVertex3d( 1.0,  1.0,  1.0);
+	glVertex3d(-1.0,  1.0,  1.0);
+	glVertex3d(-1.0,  1.0, -1.0);
+	glVertex3d( 1.0,  1.0, -1.0);
+
+	glColor3d(1.0, 1.0, 0.0);		// Левая грань, жёлтая
+	glVertex3d(-1.0, -1.0,  1.0);
+	glVertex3d( 1.0, -1.0,  1.0);
+	glVertex3d( 1.0, -1.0, -1.0);
+	glVertex3d(-1.0, -1.0, -1.0);
 
 	glEnd();
+}
+
+void DemoWindow::render()
+{
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Очистка
+
+	glLoadIdentity(); // MV = единичная матрица
+
+	gluLookAt(	3.0, 4.0, 2.0,		// Координаты камеры
+				0.0, 0.0, 0.0,		// Координаты центра
+				0.0, 0.0, 1.0);		// Направление вверх,	MV = C
+
+	glRotated(_cube_angle, 0.0, 0.0, 1.0);
+
+	draw_cube();
 }
 
 void DemoWindow::update()
