@@ -21,7 +21,7 @@ Map::Map(const char *filename)
 	std::getline(file, line);
 
 	std::stringstream params_ss(line);
-	params_ss >> _width >> _height;
+	params_ss >> _width >> _height >> _start_x >> _start_y >> _start_dir;
 
 	/*	_height		  _width
 	 * 		|			|

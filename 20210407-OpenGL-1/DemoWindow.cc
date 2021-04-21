@@ -5,14 +5,31 @@
  *      Author: unyuu
  */
 
+#include <numbers>
+#include <cmath>
+#include "Coords.h"
 #include "DemoWindow.h"
 
 DemoWindow::DemoWindow(int width, int height)
 : Window(width, height)
 {
+	SDL_SetRelativeMouseMode(SDL_TRUE);
+
 	set_title("OpenGL Demo Window");
 
 	_map = std::make_shared<Map>("map01.txt");
+	_player.spawn(
+			Point3D_Cart(_map->start_x(), _map->start_y(), 0.5),
+			Point3D_Sph(1.0, _map->start_dir(), std::numbers::pi / 2.));
+
+	_player.set_walk_check_function(
+			[&](double x, double y) -> bool {
+		int mx = int(floor(x));
+		int my = int(floor(y));
+		if (_map->cell(mx, my) == MapCell::SPACE)
+			return true;
+		return false;
+	});
 }
 
 void DemoWindow::setup_gl()
@@ -143,8 +160,16 @@ void DemoWindow::render()
 
 	glLoadIdentity(); // MV = единичная матрица
 
-	gluLookAt(	1.5, 1.5, 0.5,		// Координаты камеры
-				1.5, 2.5, 0.5,		// Координаты центра
+	auto pos = _player.pos();
+	auto dir = _player.dir();
+	auto dir_cart = Point3D_Cart(dir);
+	auto center = pos;
+	center.x += dir_cart.x;
+	center.y += dir_cart.y;
+	center.z += dir_cart.z;
+
+	gluLookAt(	pos.y, pos.x, pos.z,		// Координаты камеры
+				center.y, center.x, center.z,		// Координаты центра
 				0.0, 0.0, 1.0);		// Направление вверх,	MV = C
 
 //	glRotated(_cube_angle, 0.0, 0.0, 1.0);
@@ -169,4 +194,26 @@ void DemoWindow::update()
 	_cube_angle += 1;
 	if (_cube_angle >= 360.0)
 		_cube_angle -= 360.0;
+}
+
+void DemoWindow::handle_keys(const Uint8 *keys)
+{
+	if (keys[SDL_SCANCODE_Q]) _player.turn_left();
+	if (keys[SDL_SCANCODE_E]) _player.turn_right();
+	if (keys[SDL_SCANCODE_R]) _player.turn_up();
+	if (keys[SDL_SCANCODE_F]) _player.turn_down();
+	if (keys[SDL_SCANCODE_W]) _player.walk_forward();
+	if (keys[SDL_SCANCODE_S]) _player.walk_backward();
+	if (keys[SDL_SCANCODE_D]) _player.strafe_right();
+	if (keys[SDL_SCANCODE_A]) _player.strafe_left();
+}
+
+void DemoWindow::handle_event(const SDL_Event &event)
+{
+	if (event.type == SDL_MOUSEMOTION) {
+		double dphi = double(event.motion.xrel) / 300.0;
+		double dtheta = double(event.motion.yrel) / 300.0;
+		_player.turn_right(dphi);
+		_player.turn_down(dtheta);
+	}
 }
